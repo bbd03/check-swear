@@ -1,4 +1,5 @@
 import re
+import nltk
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
@@ -66,9 +67,13 @@ class ChatTokenization:
         
         self.language = language
         self.stemming_use = stemming_use
-        self.stemmer = SnowballStemmer(self.language) if self.stemming_use else None
+        self.stemmer = SnowballStemmer(language) if self.stemming_use else None
         self.remove_stopwords = remove_stopwords
-        self.russian_stopwords = stopwords.words(self.language) if self.remove_stopwords else None
+        if self.remove_stopwords:
+            self._download_stopwords(language=language)
+            self.russian_stopwords = stopwords.words(language)
+        else:
+            self.russian_stopwords = None
         self.delete_unigrams = delete_unigrams
         self.long_vowels_handle = long_vowels_handle
         
@@ -106,6 +111,11 @@ class ChatTokenization:
         
         return letter_tokens
     
+    def _download_stopwords(self, language):
+        try:
+            stopwords.words(language)
+        except LookupError:
+            nltk.download('stopwords')
     
     def _transliterate(self, text):
         transliterate_dict = load_transliteration_dict()

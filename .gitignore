@@ -1,0 +1,7 @@
+__pycache__/
+build/
+*.egg-info/
+*.pyc
+dist/
+venv/
+desktop.ini
